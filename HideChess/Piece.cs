@@ -10,11 +10,12 @@ namespace Game
     {
         Rook = 4,
         Bishop = 5,
-        Knight = 6
+        Knight = 6,
+        Queen = 7
     }
     public class Piece : IDisposable
     {
-        protected  Type PieceType { get; set; }
+        public  Type PieceType { get; set; }
         protected Vector2Int MoveCapacity { get; set; }
         public Vector2Int Position { get; set; }
         protected Vector2Int initialPos;

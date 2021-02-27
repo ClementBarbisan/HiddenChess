@@ -62,15 +62,21 @@ namespace Game {
               data.isKing = false;
               data.kingMove = false;
               endOfTurn = true;
-              if (Map[mPos.x, mPos.y].value > 2)
+              if (Map[mPos.x, mPos.y].value >= (int)Type.Rook)
               {
                 for (int i = 0; i < HideChess.opponents.Count; i++)
                 {
                   if (HideChess.opponents[i].Position.x == mPos.x && HideChess.opponents[i].Position.y == mPos.y)
                   {
+                    Map[mPos.x, mPos.y].value = 0;
+                    Map[mPos.x, mPos.y].marks = 0;
+                    Piece tmp = HideChess.opponents[i];
+                    if (tmp.PieceType == Type.Queen)
+                      HideChess.getQueen = true;
                     HideChess.opponents.RemoveAt(i);
-                    HideChess.opponents[i].Dispose();
-                    HideChess.opponents[i] = null;
+                    tmp.Dispose();
+                    tmp = null;
+                    return;
                   }
                 }
               }
@@ -92,7 +98,7 @@ namespace Game {
                 data.isKing = false;
                 data.kingMove = false;
                 endOfTurn = true;
-                if (Map[mPos.x, mPos.y].value > 2)
+                if (Map[mPos.x, mPos.y].value >= (int)Type.Rook)
                 {
                   for (int i = 0; i < HideChess.opponents.Count; i++)
                   {
@@ -101,6 +107,8 @@ namespace Game {
                       Map[mPos.x, mPos.y].value = 0;
                       Map[mPos.x, mPos.y].marks = 0;
                       Piece tmp = HideChess.opponents[i];
+                      if (tmp.PieceType == Type.Queen)
+                        HideChess.getQueen = true;
                       HideChess.opponents.RemoveAt(i);
                       tmp.Dispose();
                       tmp = null;
@@ -241,6 +249,10 @@ namespace Game {
           else if (Map[mPos.x, mPos.y].value == (int) Type.Rook)
           {
             mCube.Image(HideChess.images["rook"].name);
+          }
+          else if (Map[mPos.x, mPos.y].value == (int) Type.Queen)
+          {
+            mCube.Image(HideChess.images["queen"].name);
           }
         }
       }

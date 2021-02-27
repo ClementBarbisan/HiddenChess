@@ -45,6 +45,7 @@ namespace Game
       // opponents.Add(new Bishop());
       opponents.Add(new Rook());
       // opponents.Add(new Rook());
+      opponents.Add(new Queen());
       this.PauseEvent += OnPause;
       this.UnpauseEvent += OnUnpause;
       this.CubeSet.NewCubeEvent += OnNewCube;
@@ -121,6 +122,12 @@ namespace Game
           Rook rook = piece as Rook;
           if (rook != null)
             rook.Move(Map);
+          // else
+          // {
+          //   Queen queen = piece as Queen;
+          //   if (queen != null)
+          //     queen.Move(Map);
+          // }
         }
       }
     }
