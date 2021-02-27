@@ -1,10 +1,4 @@
-﻿//
-// This class is part of the Flocker demo app. See
-// [FlockerApp.cs](flockerapp.html).
-//
-
-// ------------------------------------------------------------------------
-
+﻿
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design.Serialization;
@@ -15,12 +9,9 @@ using Sifteo.MathExt;
 
 namespace Game {
 
-
-  // The FlockerWrapper class encapsulates the simulation of a collection of
-  // FlockerShape class game objects for a Cube.
+  
   class Wrapper {
 
-    // These are constants that tune the behavior of the game. Try changing some values.
     public static int WIDTH = 4;   
     public static int HEIGHT = 4;   
     internal static readonly Color[] BackgroundColors = {new Color(75, 75, 75), new Color(150, 150, 150), new Color(0, 0, 255),
@@ -33,7 +24,6 @@ namespace Game {
     internal HideChess.Case[,] Map { get; set; }
 
     public bool endOfTurn = false;
-    // Here we initialize the wrapper by associating it with a cube and seeding it with some shapes.
     internal Wrapper(Cube cube, string id, HideChess.Case[,] map) {
       this.mCube = cube;
       Random random = new Random(mCube.GetHashCode());
@@ -66,15 +56,26 @@ namespace Game {
           {
             Wrapper data = (Wrapper) mCube.Neighbors[side].userData;
             if (data.isKing && data.kingMove && mPos.x <= WIDTH && mPos.x >= 0
-                && mPos.y >= 0 && mPos.y <= HEIGHT &&
-                (Map[mPos.x, mPos.y].value == 0 || Map[mPos.x, mPos.y].value == 1))
+                && mPos.y >= 0 && mPos.y <= HEIGHT)
             {
               isKing = true;
               data.isKing = false;
               data.kingMove = false;
               endOfTurn = true;
               if (Map[mPos.x, mPos.y].value > 2)
-                HideChess.getKing = true;
+              {
+                for (int i = 0; i < HideChess.opponents.Count; i++)
+                {
+                  if (HideChess.opponents[i].Position.x == mPos.x && HideChess.opponents[i].Position.y == mPos.y)
+                  {
+                    HideChess.opponents.RemoveAt(i);
+                    HideChess.opponents[i].Dispose();
+                    HideChess.opponents[i] = null;
+                  }
+                }
+              }
+
+              // HideChess.getKing = true;
               return;
             }
             for (Cube.Side secondSide = Cube.Side.TOP; secondSide <= Cube.Side.RIGHT; ++secondSide)
@@ -85,15 +86,28 @@ namespace Game {
               if (data == null || Math.Abs(mPos.x - data.mPos.x) > 1 || Math.Abs(mPos.y - data.mPos.y) > 1)
                 continue;
               if (data.isKing && data.kingMove && mPos.x <= WIDTH && mPos.x >= 0
-                  && mPos.y >= 0 && mPos.y <= HEIGHT &&
-                  (Map[mPos.x, mPos.y].value == 0 || Map[mPos.x, mPos.y].value == 1))
+                  && mPos.y >= 0 && mPos.y <= HEIGHT)
               {
                 isKing = true;
                 data.isKing = false;
                 data.kingMove = false;
                 endOfTurn = true;
                 if (Map[mPos.x, mPos.y].value > 2)
-                  HideChess.getKing = true;
+                {
+                  for (int i = 0; i < HideChess.opponents.Count; i++)
+                  {
+                    if (HideChess.opponents[i].Position.x == mPos.x && HideChess.opponents[i].Position.y == mPos.y)
+                    {
+                      Map[mPos.x, mPos.y].value = 0;
+                      Map[mPos.x, mPos.y].marks = 0;
+                      Piece tmp = HideChess.opponents[i];
+                      HideChess.opponents.RemoveAt(i);
+                      tmp.Dispose();
+                      tmp = null;
+                      return;
+                    }
+                  }
+                }
                 return;
               }
             }
@@ -189,7 +203,6 @@ namespace Game {
       OnChangeCubePosition(c, s, neighbor, neighborSide);
     }
 
-    // Here we simulate each game object for the time that has passed.
     internal void Tick(float dt, HideChess.Case[,] map)
     {
       Map = map;
@@ -198,7 +211,6 @@ namespace Game {
 
 
 
-    // Here we paint this wrapper's shapes to the cube.
     internal void Paint() {
       if (mPos.x < 0 || mPos.x >= WIDTH|| mPos.y >= HEIGHT|| mPos.y < 0)
         this.mCube.FillScreen(BackgroundColors[2]);
@@ -214,10 +226,6 @@ namespace Game {
         {
           mCube.Image(HideChess.images["king"].name);
         }
-
-        // this.mCube.FillRect(BackgroundColors[3], Mathf.FloorToInt(Cube.SCREEN_WIDTH * 0.25f),
-            // Mathf.FloorToInt(Cube.SCREEN_HEIGHT * 0.25f),
-            // Mathf.FloorToInt(Cube.SCREEN_WIDTH * 0.5f), Mathf.FloorToInt(Cube.SCREEN_HEIGHT * 0.5f));
         else if (Map[mPos.x, mPos.y].value > 3)
         {
           foreach (Piece piece in HideChess.opponents)
@@ -234,10 +242,6 @@ namespace Game {
           {
             mCube.Image(HideChess.images["rook"].name);
           }
-
-          // this.mCube.FillRect(BackgroundColors[Map[mPos.x, mPos.y].value], Mathf.FloorToInt(Cube.SCREEN_WIDTH * 0.25f),
-            // Mathf.FloorToInt(Cube.SCREEN_HEIGHT * 0.25f),
-            // Mathf.FloorToInt(Cube.SCREEN_WIDTH * 0.5f), Mathf.FloorToInt(Cube.SCREEN_HEIGHT * 0.5f));
         }
       }
 

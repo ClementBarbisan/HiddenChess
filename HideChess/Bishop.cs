@@ -10,9 +10,10 @@ namespace Game
            PieceType = Type.Bishop;
         }
 
-        public override HideChess.Case[,] Move(HideChess.Case[,]map)
+        public override void Move(HideChess.Case[,]map)
         {
             initialPos = new Vector2Int(Position.x, Position.y);
+            map[initialPos.x, initialPos.y].value = 0;
             int tmp = 0;
             if (followKing)
             {
@@ -61,8 +62,9 @@ namespace Game
                 Position.x -= tmp;
                 Position.y -= tmp;
             }
-           
-            return (base.Move(map));
+
+            base.Move(map);
+            return;
         }
     }
 }

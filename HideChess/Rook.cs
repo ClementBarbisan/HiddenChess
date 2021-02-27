@@ -10,9 +10,10 @@ namespace Game
             PieceType = Type.Rook;
         }
 
-        public override HideChess.Case[,] Move(HideChess.Case[,] map)
+        public override void Move(HideChess.Case[,] map)
         {
             initialPos = new Vector2Int(Position.x, Position.y);
+            map[initialPos.x, initialPos.y].value = 0;
             if (followKing)
             {
                 Vector2Int direction = new Vector2Int(kingPosition.x - initialPos.x,
@@ -42,7 +43,8 @@ namespace Game
             {
                 Position.y -= rand.Next(1, Math.Min(MoveCapacity.y, Position.y));
             }
-            return (base.Move(map));
+            base.Move(map);
+            return;
         }
     }
 }

@@ -1,19 +1,3 @@
-//
-// This app presents a simple demo in which a flock of dots fly around and
-// across your cubes. Different gestures influence the dots in different ways:
-//
-// * Neighbor: allow dots to fly between cubes.
-// * Press: pull dots towards the center of a cube.
-// * Tilt: push the dots in the direction of the tilt.
-// * Shake: push the dots towards the edges of the cube.
-// * Flip: stop movement.
-//
-// The other classes for this app are in separate files. See
-// [FlockerWrapper.cs](flockerwrapper.html) and
-// [FlockerShape.cs](flockershape.html).
-//
-
-// ------------------------------------------------------------------------
 
 using System;
 using System.Collections.Generic;
@@ -72,14 +56,10 @@ namespace Game
 
       foreach (Piece piece in opponents)
       { 
-        Map = piece.Move(Map);
+        piece.Move(Map);
       }
     }
 
-    // ### BaseApp.FrameRate ###
-    // You can manually set your game's frame rate by overriding the FrameRate
-    // property.  The rate you set it to will depend on the amount of work
-    // (drawing, logic, etc.) you want to do every frame.
     public override int FrameRate
     {
       get { return 18; }
@@ -87,8 +67,6 @@ namespace Game
 
 
 
-    // For each cube that is being simulated, tick the simulation, and then
-    // paint.
     public override void Tick()
     {
       foreach (Cube c in CubeSet)
@@ -122,7 +100,8 @@ namespace Game
       {
         for (int j = 0; j < Wrapper.HEIGHT; j++)
         {
-          Map[i, j].marks = 0;
+          Map[i, j].marks -= 0.20f;
+          Map[i, j].marks = Math.Max(0, Map[i, j].marks);
           Map[i, j].isKing = false;
         }
       }
@@ -130,22 +109,22 @@ namespace Game
       Map[cw.mPos.x, cw.mPos.y].isKing = true;
       foreach (Piece piece in opponents)
       {
+        if (piece == null)
+          continue;
         if (piece.followKing)
           piece.kingPosition = new Vector2Int(cw.mPos.x, cw.mPos.y);
         Bishop bishop = piece as Bishop;
         if (bishop != null)
-          Map = bishop.Move(Map);
+          bishop.Move(Map);
         else
         {
           Rook rook = piece as Rook;
           if (rook != null)
-            Map = rook.Move(Map);
+            rook.Move(Map);
         }
       }
     }
 
-    // Paint the pause screen on each Cube, so that users know the game is
-    // paused, and not frozen.
     private void OnPause()
     {
       foreach (Cube c in this.CubeSet)
@@ -155,8 +134,6 @@ namespace Game
       }
     }
 
-    // For each Cube that is being simulated, paint over the pause screen
-    // image, now that the game is no longer paused.
     private void OnUnpause()
     {
       foreach (Cube c in this.CubeSet)
@@ -169,8 +146,6 @@ namespace Game
       }
     }
 
-    // When a Cube is added to the CubeSet, if the new Cube hasn't been
-    // initialized with a FlockerWrapper, create one.
     private void OnNewCube(Cube c)
     {
       if (c.userData == null)
@@ -186,8 +161,6 @@ namespace Game
       }
     }
 
-    // When a Cube is lost from the CubeSet, notify the FlockerWrapper for that
-    // Cube.
     private void OnLostCube(Cube c)
     {
       if (c.userData != null)
