@@ -1,0 +1,4 @@
+bishop
+king
+queen
+rook
