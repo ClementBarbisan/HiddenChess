@@ -11,7 +11,8 @@ namespace Game
         Rook = 4,
         Bishop = 5,
         Knight = 6,
-        Queen = 7
+        Queen = 7,
+        Pawn = 8
     }
     public class Piece : IDisposable
     {

@@ -1,4 +1,7 @@
 bishop
 king
+knight
+paused
+pawn
 queen
 rook

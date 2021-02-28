@@ -10,7 +10,7 @@ using Sifteo.MathExt;
 namespace Game {
 
   
-  class Wrapper {
+  class Wrapper :IDisposable {
 
     
     internal static readonly Color[] BackgroundColors = {new Color(75, 75, 75), new Color(150, 150, 150), new Color(0, 0, 255),
@@ -23,7 +23,12 @@ namespace Game {
     internal HideChess.Case[,] Map { get; set; }
 
     public bool endOfTurn = false;
-    internal Wrapper(Cube cube, string id, HideChess.Case[,] map) {
+    internal Wrapper(Cube cube, string id, HideChess.Case[,] map)
+    {
+     
+      isKing = false;
+      kingMove = false;
+      attachToKing = false;
       this.mCube = cube;
       Random random = new Random(mCube.GetHashCode());
       Map = map;
@@ -42,6 +47,13 @@ namespace Game {
 
     internal void OnButtonPressed(Cube c, bool pressed)
     {
+      if ((HideChess.getQueen || HideChess.getKing) && !HideChess.reset && pressed)
+      {
+        HideChess.reset = true;
+        return;
+      }
+      if ((HideChess.getQueen || HideChess.getKing) && pressed)
+        return;
       if (isKing && pressed)
         kingMove = true;
       if (!isKing && pressed)
@@ -250,12 +262,27 @@ namespace Game {
           {
             mCube.Image(HideChess.images["queen"].name);
           }
+          else if (Map[mPos.x, mPos.y].value == (int) Type.Knight)
+          {
+            mCube.Image(HideChess.images["knight"].name);
+          }
+          else if (Map[mPos.x, mPos.y].value == (int) Type.Pawn)
+          {
+            mCube.Image(HideChess.images["pawn"].name);
+          }
         }
       }
 
       this.mCube.Paint();
     }
 
+    public void Dispose()
+    {
+      mCube.NeighborAddEvent -= OnNeighborAdd;
+      mCube.NeighborRemoveEvent -= this.OnNeighborRemove;
+      mCube.ButtonEvent -= OnButtonPressed;
+      Map = null;
+    }
   }
 
   public class Vector2Int

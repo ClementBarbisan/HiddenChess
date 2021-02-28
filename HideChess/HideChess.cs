@@ -19,8 +19,9 @@ namespace Game
       public bool isKing;
     };
 
-    public static bool getKing = false;
-    public static bool getQueen = false;
+    public static bool getKing;
+    public static bool getQueen;
+    public static bool reset;
     public static Vector2Int kingPosition;
     public static List<Piece> opponents;
     internal string idMain = null;
@@ -28,24 +29,59 @@ namespace Game
     internal Case[,] Map;
     internal Vector2Int initialKingPos;
     internal readonly int[,] initialMap =
+    // {
+    //   {0,0,9},
+    //   {7,0,0}
+    // };
     {
       {0,0,0,0,0,0,0,0,7},
-      {0,0,0,0,0,0,0,0,0},
-      {0,0,0,0,0,0,5,0,0},
+      {0,8,0,0,0,0,0,0,0},
+      {0,0,0,0,8,0,5,0,0},
       {0,0,0,4,0,0,0,0,0},
-      {0,0,0,0,0,0,0,0,0},
+      {0,0,0,0,8,0,0,0,0},
       {0,0,5,0,0,0,4,0,0},
-      {0,0,0,0,0,0,0,0,0},
-      {0,0,0,0,0,0,0,0,0},
+      {0,0,0,0,8,0,0,0,0},
+      {0,8,0,0,0,0,0,0,0},
       {0,0,0,0,0,0,0,0,9}
     };
-
     // Here we initialize our app.
     public override void Setup()
     {
-      Map = new Case[WIDTH, HEIGHT];
-      bool queenAdded = false;
+      if (reset)
+      {
+        base.Setup();
+        idMain = null;
+        this.PauseEvent -= OnPause;
+        this.UnpauseEvent -= OnUnpause;
+        this.CubeSet.NewCubeEvent -= OnNewCube;
+        this.CubeSet.LostCubeEvent -= OnLostCube;
+        foreach (Cube c in CubeSet)
+        {
+          ((Wrapper)c.userData).Dispose();
+          c.userData = null;
+        }
+        Map = null;
+        if (opponents != null)
+        {
+          for (int i = 0; i < opponents.Count; i++)
+          {
+            Piece tmp = opponents[i];
+            tmp.Dispose();
+            tmp = null;
+          }
+          opponents.Clear();
+        }
+        GC.Collect();
+      }
       opponents = new List<Piece>();
+      bool queenAdded = false;
+      reset = false;
+      getKing = false;
+      getQueen = false;
+      HEIGHT = initialMap.GetLength(1);
+      WIDTH = initialMap.GetLength(0);
+
+      Map = new Case[WIDTH, HEIGHT];
       for (int i = 0; i < WIDTH; i++)
       {
         for (int j = 0; j < HEIGHT; j++)
@@ -54,41 +90,43 @@ namespace Game
           if (tmp == (int) Type.Bishop)
           {
             opponents.Add(new Bishop());
-            opponents[opponents.Count - 1].Position = new Vector2Int(i, HEIGHT - 1 - j);
+            opponents[opponents.Count - 1].Position = new Vector2Int(i, j);
           }
           else if (tmp == (int) Type.Rook)
           {
             opponents.Add(new Rook());
-            opponents[opponents.Count - 1].Position = new Vector2Int(i, HEIGHT - 1 - j);
+            opponents[opponents.Count - 1].Position = new Vector2Int(i, j);
           }
-          // if (tmp == (int)Type.Knight)
-            // opponents.Add(new Knight()); 
+          else if (tmp == (int) Type.Knight)
+          {
+            opponents.Add(new Knight());
+            opponents[opponents.Count - 1].Position = new Vector2Int(i, j);
+          }
+          else if (tmp == (int) Type.Pawn)
+          {
+            opponents.Add(new Pawn());
+            opponents[opponents.Count - 1].Position = new Vector2Int(i, j);
+          } 
           else if (tmp == (int) Type.Queen && !queenAdded)
           {
             opponents.Add(new Queen());
-            opponents[opponents.Count - 1].Position = new Vector2Int(i, HEIGHT - 1 - j);
+            opponents[opponents.Count - 1].Position = new Vector2Int(i, j);
             queenAdded = true;
-          }
+          } 
           Map[i, j] = new Case();
           Map[i, j].value = 0;
           Map[i, j].isKing = false;
           if (tmp == 9)
           {
-            initialKingPos = new Vector2Int(i, HEIGHT - 1 - j);
+            initialKingPos = new Vector2Int(i, j);
             Map[i, j].isKing = true;
           }
-          else if (!queenAdded)
+          else if (tmp != 7 || queenAdded)
             Map[i, j].value = tmp;
           Map[i, j].marks = 0;
         }
       }
       images = this.Images;
-      // opponents = new List<Piece>();
-      // opponents.Add(new Bishop());
-      // // opponents.Add(new Bishop());
-      // opponents.Add(new Rook());
-      // // opponents.Add(new Rook());
-      // opponents.Add(new Queen());
       this.PauseEvent += OnPause;
       this.UnpauseEvent += OnUnpause;
       this.CubeSet.NewCubeEvent += OnNewCube;
@@ -113,6 +151,11 @@ namespace Game
 
     public override void Tick()
     {
+      if (reset)
+      {
+        Setup();
+        return;
+      }
       foreach (Cube c in CubeSet)
       {
         if (getKing)
@@ -159,18 +202,27 @@ namespace Game
           piece.kingPosition = new Vector2Int(cw.mPos.x, cw.mPos.y);
         Bishop bishop = piece as Bishop;
         if (bishop != null)
-          bishop.Move(Map);
-        else
         {
-          Rook rook = piece as Rook;
-          if (rook != null)
-            rook.Move(Map);
-          // else
-          // {
-          //   Queen queen = piece as Queen;
-          //   if (queen != null)
-          //     queen.Move(Map);
-          // }
+          bishop.Move(Map);
+          continue;
+        } 
+        Rook rook = piece as Rook;
+        if (rook != null)
+        {
+          rook.Move(Map);
+          continue;
+        }
+        Knight knight = piece as Knight;
+        if (knight != null)
+        {
+          knight.Move(Map);
+          continue;
+        }
+        Pawn pawn = piece as Pawn;
+        if (pawn != null)
+        {
+          pawn.Move(Map);
+          continue;
         }
       }
     }
