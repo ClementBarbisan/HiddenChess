@@ -1,8 +1,5 @@
 ﻿
 using System;
-using System.Collections.Generic;
-using System.ComponentModel.Design.Serialization;
-using System.Security.Cryptography;
 using Sifteo;
 using Sifteo.MathExt;
 
@@ -32,7 +29,7 @@ namespace Game {
       this.mCube = cube;
       Random random = new Random(mCube.GetHashCode());
       Map = map;
-      mPos = new Vector2Int(0, 0);
+      mPos = new Vector2Int(HideChess.WIDTH, HideChess.HEIGHT);
       if (id == mCube.UniqueId)
       {
         isKing = true;

@@ -9,8 +9,6 @@ namespace Game
             PieceType = Type.Pawn;
             int tmpX = rand.Next(0, 1);
             MoveCapacity = new Vector2Int(tmpX, 1 - tmpX);
-            // Position = new Vector2Int(rand.Next(2, Wrapper.WIDTH - 1), rand.Next(2, Wrapper.HEIGHT - 1));
-            // initialPos = Position;
         }
 
         public override void Move(HideChess.Case[,] map)

@@ -1,7 +1,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using Sifteo;
 
 
@@ -10,8 +9,9 @@ namespace Game
 
   public class HideChess : BaseApp
   {
-    public static int WIDTH = 9;   
-    public static int HEIGHT = 9;   
+    public static int WIDTH = 9;
+    public static int HEIGHT = 9;
+
     public struct Case
     {
       public int value;
@@ -19,37 +19,99 @@ namespace Game
       public bool isKing;
     };
 
+    public static readonly int[,] map0 =
+    {
+      {7, 0, 0},
+      {0, 0, 0},
+      {0, 0, 9}
+    };
+    public static readonly int[,] map1 =
+    {
+      {7, 0, 0},
+      {0, 8, 0},
+      {0, 0, 9}
+    };
+    
+    public static readonly int[,] map2 =
+    {
+      {7, 0, 0},
+      {0, 5, 0},
+      {0, 0, 9}
+    };
+    public static readonly int[,] map3 =
+    {
+      {7, 0, 0},
+      {0, 4, 0},
+      {0, 0, 9}
+    };
+    
+    public static readonly int[,] map4 =
+    {
+      {7, 0, 0, 0},
+      {0, 1, 1, 0},
+      {0, 1, 1, 0},
+      {0, 0, 0, 9}
+    };
+    
+    public static readonly int[,] map5 =
+    {
+      {7, 0, 0, 0},
+      {0, 0, 4, 0},
+      {0, 4, 0, 0},
+      {0, 0, 0, 9}
+    };
+    
+    public static readonly int[,] map6 =
+    {
+      {7, 0, 0, 0},
+      {0, 0, 5, 0},
+      {0, 5, 0, 0},
+      {0, 0, 0, 9}
+    };
+    
+    public static readonly int[,] map7 =
+    {
+      {5, 0, 4, 0, 7, 4, 0, 5},
+      {8, 8, 8, 8, 8, 8, 8, 8},
+      {0, 0, 0, 0, 0, 0, 0, 0},
+      {0, 0, 0, 0, 0, 0, 0, 0},
+      {0, 0, 0, 0, 0, 0, 0, 0},
+      {0, 0, 0, 0, 0, 0, 0, 0},
+      {0, 0, 0, 0, 0, 0, 0, 0},
+      {0, 0, 0, 9, 0, 0, 0, 0}
+    };
+    
+    public readonly List<int[,]> maps = new List<int[,]>()
+    {
+      map0,
+      map1,
+      map2,
+      map3,
+      map4,
+      map5,
+      map6,
+      map7
+    };
+
     public static bool getKing;
     public static bool getQueen;
     public static bool reset;
-    public static Vector2Int kingPosition;
     public static List<Piece> opponents;
     internal string idMain = null;
     public static ImageSet images;
     internal Case[,] Map;
     internal Vector2Int initialKingPos;
-    internal readonly int[,] initialMap =
-    // {
-    //   {0,0,9},
-    //   {7,0,0}
-    // };
-    {
-      {0,0,0,0,0,0,0,0,7},
-      {0,8,0,0,0,0,0,0,0},
-      {0,0,0,0,8,0,5,0,0},
-      {0,0,0,4,0,0,0,0,0},
-      {0,0,0,0,8,0,0,0,0},
-      {0,0,5,0,0,0,4,0,0},
-      {0,0,0,0,8,0,0,0,0},
-      {0,8,0,0,0,0,0,0,0},
-      {0,0,0,0,0,0,0,0,9}
-    };
+
+    internal int indexMap = 0;
+  
     // Here we initialize our app.
     public override void Setup()
     {
       if (reset)
       {
         base.Setup();
+        if (getQueen)
+          indexMap++;
         idMain = null;
         this.PauseEvent -= OnPause;
         this.UnpauseEvent -= OnUnpause;
@@ -59,6 +121,12 @@ namespace Game
         {
           ((Wrapper)c.userData).Dispose();
           c.userData = null;
+          if (indexMap >= maps.Count)
+          {
+            c.FillScreen(new Color(0, 0, 0));
+            c.Image(Images["king"].name);
+            c.Paint();
+          }
         }
         Map = null;
         if (opponents != null)
@@ -72,12 +140,19 @@ namespace Game
           opponents.Clear();
         }
         GC.Collect();
+        if (indexMap >= maps.Count)
+        {
+          getKing = true;
+          getQueen = true;
+          return;
+        }
       }
       opponents = new List<Piece>();
       bool queenAdded = false;
       reset = false;
       getKing = false;
       getQueen = false;
+      int[,] initialMap = maps[indexMap];
       HEIGHT = initialMap.GetLength(1);
       WIDTH = initialMap.GetLength(0);
 
