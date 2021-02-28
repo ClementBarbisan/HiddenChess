@@ -26,21 +26,20 @@ namespace Game
         public Piece()
         {
             rand = new Random(GetHashCode());
-            MoveCapacity = new Vector2Int(Wrapper.WIDTH - 1, Wrapper.HEIGHT - 1);
-            Position = new Vector2Int(rand.Next(1, Wrapper.WIDTH - 1), rand.Next(1, Wrapper.HEIGHT - 1));
-            initialPos = Position;
+            MoveCapacity = new Vector2Int(HideChess.WIDTH - 1, HideChess.HEIGHT - 1);
+            // Position = new Vector2Int(rand.Next(1, Wrapper.WIDTH - 1), rand.Next(1, Wrapper.HEIGHT - 1));
+            // initialPos = Position;
         }
 
-        public HideChess.Case[,] Set(HideChess.Case[,] map)
+        public void Set(HideChess.Case[,] map)
         {
-            map[initialPos.x, initialPos.y].value = (int) PieceType;
-            return (map);
+            map[Position.x, Position.y].value = (int) PieceType;
         }
 
         public virtual void Move(HideChess.Case[,] map)
         {
-            if (Math.Min(Math.Max(0, Position.x), Wrapper.WIDTH - 1) != Position.x ||
-                Math.Min(Math.Max(0, Position.y), Wrapper.HEIGHT - 1) != Position.y)
+            if (Math.Min(Math.Max(0, Position.x), HideChess.WIDTH - 1) != Position.x ||
+                Math.Min(Math.Max(0, Position.y), HideChess.HEIGHT - 1) != Position.y)
                 return;
             if (map[Position.x, Position.y].isKing)
             {

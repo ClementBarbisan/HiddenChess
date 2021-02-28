@@ -1,10 +1,10 @@
 {
   "app": {
-    "title": "Game",
+    "title": "Hidden Chess",
     "version": "0.0.1",
     "runtime": "executable",
     "assembly": "Game.dll",
-    "description": "A freshly generated game.",
+    "description": "A chess where where you need to find the queen and escape from the others pieces or take them. The rules are pretty much the same as regular chess. To Move the king just press the king then press the cube where you want to go.",
     "appModule": "UNUSED",
     "coverArt": "cover.png",
     "internalArt": "internalArt.png",

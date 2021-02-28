@@ -12,8 +12,7 @@ namespace Game {
   
   class Wrapper {
 
-    public static int WIDTH = 4;   
-    public static int HEIGHT = 4;   
+    
     internal static readonly Color[] BackgroundColors = {new Color(75, 75, 75), new Color(150, 150, 150), new Color(0, 0, 255),
       new Color(255, 0, 0), new Color(255, 255, 0), new Color(0, 255, 255) , new Color(0, 255, 0)};
     public Vector2Int mPos;
@@ -32,9 +31,6 @@ namespace Game {
       if (id == mCube.UniqueId)
       {
         isKing = true;
-       
-        mPos = new Vector2Int(random.Next(WIDTH), random.Next(HEIGHT));
-        Paint();
       }
 
       mCube.NeighborAddEvent += OnNeighborAdd;
@@ -55,8 +51,8 @@ namespace Game {
           if (mCube.Neighbors[side] != null)
           {
             Wrapper data = (Wrapper) mCube.Neighbors[side].userData;
-            if (data.isKing && data.kingMove && mPos.x <= WIDTH && mPos.x >= 0
-                && mPos.y >= 0 && mPos.y <= HEIGHT)
+            if (data.isKing && data.kingMove && mPos.x <= HideChess.WIDTH && mPos.x >= 0
+                && mPos.y >= 0 && mPos.y <= HideChess.HEIGHT)
             {
               isKing = true;
               data.isKing = false;
@@ -91,8 +87,8 @@ namespace Game {
               data = (Wrapper) mCube.Neighbors[side].Neighbors[secondSide].userData;
               if (data == null || Math.Abs(mPos.x - data.mPos.x) > 1 || Math.Abs(mPos.y - data.mPos.y) > 1)
                 continue;
-              if (data.isKing && data.kingMove && mPos.x <= WIDTH && mPos.x >= 0
-                  && mPos.y >= 0 && mPos.y <= HEIGHT)
+              if (data.isKing && data.kingMove && mPos.x <= HideChess.WIDTH && mPos.x >= 0
+                  && mPos.y >= 0 && mPos.y <= HideChess.HEIGHT)
               {
                 isKing = true;
                 data.isKing = false;
@@ -220,7 +216,7 @@ namespace Game {
 
 
     internal void Paint() {
-      if (mPos.x < 0 || mPos.x >= WIDTH|| mPos.y >= HEIGHT|| mPos.y < 0)
+      if (mPos.x < 0 || mPos.x >= HideChess.WIDTH|| mPos.y >= HideChess.HEIGHT|| mPos.y < 0)
         this.mCube.FillScreen(BackgroundColors[2]);
       else
       {
