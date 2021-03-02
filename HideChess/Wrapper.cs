@@ -268,6 +268,8 @@ namespace Game {
             mCube.Image(HideChess.images["pawn"].name);
           }
         }
+
+        mCube.FillRect(Color.White, 0, 123, 128, 5);
       }
 
       this.mCube.Paint();
